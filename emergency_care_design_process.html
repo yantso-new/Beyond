@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Care Finder - Product Design Process</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #000000;
+            --bg-elevated: #0a0a0a;
+            --surface: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.06);
+            --border-strong: rgba(255, 255, 255, 0.1);
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa;
+            --text-muted: #52525b;
+            --accent: #5eead4;
+            --accent-dim: rgba(94, 234, 212, 0.08);
+            --red: #f87171;
+            --red-dim: rgba(248, 113, 113, 0.08);
+            --orange: #fb923c;
+            --orange-dim: rgba(251, 146, 60, 0.08);
+            --yellow: #fbbf24;
+            --yellow-dim: rgba(251, 191, 36, 0.08);
+            --green: #4ade80;
+            --green-dim: rgba(74, 222, 128, 0.08);
+            --neutral: #71717a;
+            --neutral-dim: rgba(113, 113, 122, 0.08);
+            --blue: #60a5fa;
+            --blue-dim: rgba(96, 165, 250, 0.08);
+            --font-body: 'DM Sans', -apple-system, sans-serif;
+            --font-mono: 'Space Mono', monospace;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ── Slide System ── */
+
+        .slide-deck {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 80px 120px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .slide.active .slide-inner>* {
+            animation: fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+
+        .slide.active .slide-inner>*:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .slide.active .slide-inner>*:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .slide.active .slide-inner>*:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .slide.active .slide-inner>*:nth-child(4) {
+            animation-delay: 0.2s;
+        }
+
+        .slide.active .slide-inner>*:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+
+        .slide.active .slide-inner>*:nth-child(6) {
+            animation-delay: 0.3s;
+        }
+
+        .slide.active .slide-inner>*:nth-child(7) {
+            animation-delay: 0.35s;
+        }
+
+        .slide.active .slide-inner>*:nth-child(8) {
+            animation-delay: 0.4s;
+        }
+
+        .slide.active .slide-inner>*:nth-child(9) {
+            animation-delay: 0.45s;
+        }
+
+        .slide.active .slide-inner>*:nth-child(10) {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-inner {
+            max-width: 960px;
+            width: 100%;
+        }
+
+        /* ── Typography ── */
+
+        h1 {
+            font-size: 3.7rem;
+            font-weight: 300;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        h2 {
+            font-size: 2.6rem;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            color: var(--text-primary);
+            margin-bottom: 32px;
+        }
+
+        h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+            margin-top: 32px;
+            font-family: var(--font-mono);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        p {
+            font-size: 1.13rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        ul {
+            list-style: none;
+            margin-left: 0;
+            padding-left: 0;
+        }
+
+        li {
+            font-size: 1.08rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 11px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        strong {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        em {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* ── Layout Components ── */
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-bottom: 12px;
+        }
+
+        .divider {
+            width: 48px;
+            height: 1px;
+            background: var(--accent);
+            margin: 32px 0;
+            opacity: 0.5;
+        }
+
+        .intro-statement {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            padding: 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 24px 0;
+            border-left: 2px solid var(--accent);
+        }
+
+        .highlight {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* ── Phase Rows ── */
+
+        .phase-row {
+            display: flex;
+            align-items: flex-start;
+            padding: 16px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            gap: 16px;
+        }
+
+        .phase-label {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--accent);
+            min-width: 90px;
+            white-space: nowrap;
+        }
+
+        .phase-content {
+            color: var(--text-secondary);
+            font-size: 1.08rem;
+            line-height: 1.6;
+        }
+
+        /* ── Cards ── */
+
+        .focus-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 12px 0;
+        }
+
+        .phase-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .phase-card h4 {
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-family: var(--font-mono);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .phase-card p {
+            font-size: 1.05rem;
+            margin-bottom: 0;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 12px 0;
+        }
+
+        /* ── Data / Signal / Trade-off Boxes ── */
+
+        .data-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 2px solid var(--green);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+
+        .signal-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 2px solid var(--accent);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+
+        .trade-off-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 2px solid var(--blue);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+
+        .risk-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 2px solid var(--red);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+
+        /* ── Team Section ── */
+
+        .team-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 16px;
+        }
+
+        .team-role {
+            padding: 12px 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-left: 2px solid var(--accent);
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .team-role strong {
+            color: var(--accent);
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.85rem;
+            font-family: var(--font-mono);
+        }
+
+        .team-role p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        /* ── Triage Priority System ── */
+
+        .triage-priority {
+            padding: 14px 18px;
+            margin: 6px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            border-left: 3px solid;
+        }
+
+        .triage-priority.emergent {
+            border-left-color: var(--red);
+            background: var(--red-dim);
+        }
+
+        .triage-priority.very-urgent {
+            border-left-color: var(--orange);
+            background: var(--orange-dim);
+        }
+
+        .triage-priority.urgent {
+            border-left-color: var(--yellow);
+            background: var(--yellow-dim);
+        }
+
+        .triage-priority.less-urgent {
+            border-left-color: var(--green);
+            background: var(--green-dim);
+        }
+
+        .triage-priority.non-urgent {
+            border-left-color: var(--neutral);
+            background: var(--neutral-dim);
+        }
+
+        .triage-label {
+            font-weight: 600;
+            font-size: 1.05rem;
+            display: block;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .triage-content {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            display: block;
+            line-height: 1.5;
+        }
+
+        /* ── Source Citation ── */
+
+        .source-citation {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            font-family: var(--font-mono);
+        }
+
+        /* ── Footer ── */
+
+        .footer-note {
+            color: var(--text-muted);
+            font-size: 0.98rem;
+            margin-top: 24px;
+        }
+
+        /* ── Navigation Controls ── */
+
+        .nav-controls {
+            position: fixed;
+            bottom: 32px;
+            right: 40px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 100;
+        }
+
+        .slide-counter {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .nav-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border-strong);
+            background: var(--surface);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .nav-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ── Progress Bar ── */
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            opacity: 0.6;
+        }
+
+        /* ── Slide Number ── */
+
+        .slide-number {
+            position: absolute;
+            bottom: 32px;
+            left: 120px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
+        }
+
+        /* ── Figma Embed ── */
+
+        .figma-embed {
+            width: 100%;
+            height: 400px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        /* ── Prototype Slide Layout ── */
+
+        .prototype-slide .slide-inner {
+            max-width: 1200px;
+        }
+
+        .prototype-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 40px;
+            align-items: start;
+            margin-top: 8px;
+        }
+
+        /* macOS-style browser window mockup */
+        .browser-window {
+            background: #111;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.8);
+        }
+
+        .browser-chrome {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: #1a1a1a;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .browser-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .browser-dot.close {
+            background: #ff5f57;
+        }
+
+        .browser-dot.min {
+            background: #febc2e;
+        }
+
+        .browser-dot.full {
+            background: #28c840;
+        }
+
+        .browser-url {
+            flex: 1;
+            margin-left: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 5px;
+            padding: 4px 10px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .browser-content {
+            display: block;
+            width: 100%;
+            height: 420px;
+            border: none;
+        }
+
+        .prototype-info h3 {
+            margin-top: 0;
+        }
+
+        /* ── iPhone Mockup ── */
+
+        .iphone-slide .slide-inner {
+            max-width: 1100px;
+        }
+
+        .iphone-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 56px;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .iphone-mockup {
+            position: relative;
+            width: 280px;
+            flex-shrink: 0;
+        }
+
+        .iphone-shell {
+            position: relative;
+            width: 280px;
+            height: 572px;
+            background: linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 40%, #111 100%);
+            border-radius: 44px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow:
+                0 0 0 1px rgba(0, 0, 0, 0.8),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+                0 40px 80px rgba(0, 0, 0, 0.9),
+                0 0 40px rgba(94, 234, 212, 0.06);
+            overflow: visible;
+        }
+
+        /* Side buttons */
+        .iphone-shell::before {
+            content: '';
+            position: absolute;
+            right: -3px;
+            top: 110px;
+            width: 3px;
+            height: 68px;
+            background: #252525;
+            border-radius: 0 2px 2px 0;
+            box-shadow: 0 80px 0 #252525;
+        }
+
+        .iphone-shell::after {
+            content: '';
+            position: absolute;
+            left: -3px;
+            top: 90px;
+            width: 3px;
+            height: 38px;
+            background: #252525;
+            border-radius: 2px 0 0 2px;
+            box-shadow: 0 54px 0 #252525, 0 100px 0 #252525;
+        }
+
+        .iphone-screen-area {
+            position: absolute;
+            inset: 10px;
+            background: #ffffff;
+            border-radius: 36px;
+            overflow: hidden;
+        }
+
+        .iphone-dynamic-island {
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 96px;
+            height: 28px;
+            background: #000;
+            border-radius: 20px;
+            z-index: 10;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+        }
+
+        .iphone-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .iphone-home-indicator {
+            position: absolute;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 110px;
+            height: 4px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+            z-index: 10;
+        }
+
+        .iphone-screenshot-link {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .iphone-screenshot {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            display: block;
+        }
+
+        .iphone-screenshot-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: white;
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+            letter-spacing: 0.05em;
+            opacity: 0;
+            transition: opacity 0.2s ease, background 0.2s ease;
+        }
+
+        .iphone-screenshot-link:hover .iphone-screenshot-overlay {
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.45);
+        }
+
+        .iphone-info h3 {
+            margin-top: 0;
+        }
+
+        /* ── Print Styles ── */
+
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+
+            .slide {
+                position: relative;
+                opacity: 1;
+                visibility: visible;
+                background: white;
+                color: black;
+                page-break-after: always;
+                padding: 40px;
+            }
+
+            h1,
+            h2 {
+                color: #0a0a0a;
+            }
+
+            h3 {
+                color: #333;
+            }
+
+            p,
+            li {
+                color: #333;
+            }
+
+            .nav-controls,
+            .progress-bar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="slide-deck" id="slideDeck">
+
+        <!-- SLIDE 1: Title -->
+        <div class="slide active" data-slide="1">
+            <div class="slide-inner">
+                <h3>Beyond — Product Design Assignment</h3>
+                <h1>Emergency Care Finder</h1>
+                <p class="subtitle">Portugal-Focused Product Design Process</p>
+                <div class="divider"></div>
+                <p style="font-size: 1.05rem; margin-top: 24px;">A structured walkthrough of how to design a system
+                    helping people quickly identify life-threatening situations and route to appropriate emergency care
+                    in Portugal.</p>
+                <p style="margin-top: 16px; color: var(--text-muted);">Data-driven approach using Portugal's INEM
+                    (Instituto Nacional de Emergência Médica) triage system, verified response times, and healthcare
+                    structure.</p>
+            </div>
+            <span class="slide-number">01 / 14</span>
+        </div>
+
+        <!-- SLIDE 2: The 4-Phase Plan -->
+        <div class="slide" data-slide="2">
+            <div class="slide-inner">
+                <h3>Plan of Attack</h3>
+                <h2>4 Phases</h2>
+                <p style="margin-bottom: 24px;">Structured approach to validate assumptions, involve cross-functional
+                    partners, and deliver a testable solution:</p>
+
+                <div class="phase-row">
+                    <span class="phase-label">Phase 1</span>
+                    <span class="phase-content"><strong>Discovery</strong> — Research problem space, validate triage
+                        logic, audit INEM data integration feasibility</span>
+                </div>
+
+                <div class="phase-row">
+                    <span class="phase-label">Phase 2</span>
+                    <span class="phase-content"><strong>Define</strong> — One user, one critical problem, one sharp
+                        problem statement aligned to Portugal's healthcare context</span>
+                </div>
+
+                <div class="phase-row">
+                    <span class="phase-label">Phase 3</span>
+                    <span class="phase-content"><strong>Design</strong> — Critical flow: Life-threat assessment → triage
+                        classification → facility routing</span>
+                </div>
+
+                <div class="phase-row">
+                    <span class="phase-label">Phase 4</span>
+                    <span class="phase-content"><strong>Test & Iterate</strong> — Validate with real users in Portugal,
+                        refine based on INEM integration feedback</span>
+                </div>
+
+                <p class="footer-note"><span class="highlight">Why this structure?</span> High-stakes domain (emergency
+                    care). Wrong assumptions = system misdirects people. 50% of effort goes to validation, not UI.</p>
+            </div>
+            <span class="slide-number">02 / 14</span>
+        </div>
+
+        <!-- SLIDE 3: Discovery Research Section -->
+        <div class="slide" data-slide="3">
+            <div class="slide-inner">
+                <h3>Phase 1</h3>
+                <h2>Discovery & Research</h2>
+                <p style="margin-bottom: 20px;">Building confidence in the problem space through primary and secondary
+                    research</p>
+
+                <h3>Research Methods</h3>
+                <div class="focus-box">
+                    <p><strong>Qualitative Research:</strong></p>
+                    <ul style="margin-top: 10px;">
+                        <li>Contextual inquiry: How do people search for emergency care when stressed? (112 vs. driving
+                            directly vs. asking neighbors)</li>
+                        <li>User interviews: 6-8 Portugal-based participants (elderly, parents with children, workers in
+                            rural areas)</li>
+                        <li>Healthcare provider interviews: INEM dispatch center staff, ER triage nurses, urgent care
+                            doctors</li>
+                    </ul>
+                </div>
+
+                <p class="footer-note"><span class="highlight">Research Focus:</span> Validate that life-threat
+                    detection is the critical first step, not facility selection.</p>
+            </div>
+            <span class="slide-number">03 / 14</span>
+        </div>
+
+        <!-- SLIDE 4: Cross-Functional Alignment — PM, Dev & Design -->
+        <div class="slide" data-slide="4">
+            <div class="slide-inner" style="max-width: 1060px;">
+                <h3>Discovery — Inner Connections</h3>
+                <h2>PM, Dev & Design Alignment</h2>
+                <p style="margin-bottom: 20px;">Discovery isn't solo. Three functions shape what gets built — and
+                    misalignment here creates expensive rework later.</p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
+
+                    <!-- PM -->
+                    <div
+                        style="background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--orange); border-radius: 8px; padding: 20px;">
+                        <div
+                            style="font-size: 0.68rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange); margin-bottom: 6px;">
+                            Product Manager</div>
+                        <h4 style="color: var(--text-primary); margin-bottom: 12px;">Scope & Strategy</h4>
+                        <ul style="margin-top: 0;">
+                            <li>Define MVP boundaries — what's v1 vs. post-launch</li>
+                            <li>Align on success metrics before design begins</li>
+                            <li>Prioritise user segments (Seeker P1, Operator P2)</li>
+                            <li>Legal & regulatory flags — INEM data sharing, GDPR, medical disclaimers</li>
+                        </ul>
+                    </div>
+
+                    <!-- Design -->
+                    <div
+                        style="background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--accent); border-radius: 8px; padding: 20px;">
+                        <div
+                            style="font-size: 0.68rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 6px;">
+                            Product Designer</div>
+                        <h4 style="color: var(--text-primary); margin-bottom: 12px;">Research & Flow</h4>
+                        <ul style="margin-top: 0;">
+                            <li>Contextual inquiry with real users in stress scenarios</li>
+                            <li>Map the full journey across all 3 user types</li>
+                            <li>Accessibility-first for elderly / panic-state contexts</li>
+                            <li>Prototype the P1 gate — validate binary yes/no works</li>
+                            <li>Handoff specs tied to component tokens, not pixel-perfect</li>
+                        </ul>
+                    </div>
+
+                    <!-- Dev -->
+                    <div
+                        style="background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--blue); border-radius: 8px; padding: 20px;">
+                        <div
+                            style="font-size: 0.68rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--blue); margin-bottom: 6px;">
+                            Engineering</div>
+                        <h4 style="color: var(--text-primary); margin-bottom: 12px;">Feasibility & Platform</h4>
+                        <ul style="margin-top: 0;">
+                            <li>INEM / SNS API scope — what's exposed, what needs workarounds</li>
+                            <li>Geolocation accuracy per target platform</li>
+                            <li>Offline-first fallback for rural / no-signal areas</li>
+                        </ul>
+                        <div
+                            style="margin-top: 12px; padding: 12px 14px; background: var(--blue-dim); border-radius: 6px; border: 1px solid rgba(96,165,250,0.15);">
+                            <div
+                                style="font-size: 0.65rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--blue); margin-bottom: 8px;">
+                                Platform Targets</div>
+                            <ul style="margin: 0;">
+                                <li style="font-size: 0.84rem; margin-bottom: 6px;"><strong>Mobile Native</strong> — iOS
+                                    & Android. Primary. Push notifications, background location, instant launch</li>
+                                <li style="font-size: 0.84rem; margin-bottom: 6px;"><strong>Mobile Web / PWA</strong> —
+                                    Fallback for link-shared crisis access. No install required, works immediately</li>
+                                <li style="font-size: 0.84rem; margin-bottom: 6px;"><strong>Wearable (Watch)</strong> —
+                                    Apple Watch / WearOS. Trigger P1 gate when phone is out of reach. Haptic feedback +
+                                    oversized tap targets</li>
+                                <li style="font-size: 0.84rem; margin-bottom: 0;"><strong>Responsive Tablet /
+                                        Desktop</strong> — For Operators and Dispatchers in coordination centres</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+
+                <p class="footer-note" style="margin-top: 16px;"><span class="highlight">Alignment cadence:</span> PM +
+                    Design sync daily during Discovery. Dev joins for feasibility reviews at end of each research sprint
+                    — not only at handoff.</p>
+            </div>
+            <span class="slide-number">04 / 14</span>
+        </div>
+
+        <!-- SLIDE 5: User Entry Points — How the User Encounters the Product -->
+        <div class="slide" data-slide="5">
+            <div class="slide-inner" style="max-width: 1060px;">
+                <h3>Discovery — User Intent</h3>
+                <h2>Where Does the User Meet the Product?</h2>
+                <p style="margin-bottom: 20px;">Entry intent shapes onboarding, trust signals, and the first screen. A
+                    user who installed months ago as a precaution needs a fundamentally different first experience than
+                    someone opening a link mid-crisis.</p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+
+                    <div
+                        style="background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--green); border-radius: 8px; padding: 18px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                            <span style="font-size: 1.1rem;">📲</span>
+                            <div
+                                style="font-size: 0.65rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--green);">
+                                Intent A — Precautionary Install</div>
+                        </div>
+                        <p style="font-size: 0.92rem; margin-bottom: 8px;"><strong>Before any emergency.</strong> User
+                            downloads "just in case" after a doctor, insurer, expat community, or trusted friend
+                            recommends it.</p>
+                        <p style="font-size: 0.84rem; color: var(--text-muted); margin: 0;">Design implication:
+                            Onboarding can take time. Set location permissions, optionally pre-fill health context,
+                            explain triage logic calmly and clearly.</p>
+                    </div>
+
+                    <div
+                        style="background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--accent); border-radius: 8px; padding: 18px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                            <span style="font-size: 1.1rem;">📱</span>
+                            <div
+                                style="font-size: 0.65rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent);">
+                                Intent B — SNS Discovery</div>
+                        </div>
+                        <p style="font-size: 0.92rem; margin-bottom: 8px;"><strong>Passive awareness.</strong>
+                            Instagram, X, TikTok health content or a news article surfaces the app. User installs but is
+                            not in immediate need.</p>
+                        <p style="font-size: 0.84rem; color: var(--text-muted); margin: 0;">Design implication: App
+                            store screenshots and first-open screen must convey trust + simplicity fast. May benefit
+                            from an ambient value mode — non-emergency facility finder.</p>
+                    </div>
+
+                    <div
+                        style="background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--red); border-radius: 8px; padding: 18px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                            <span style="font-size: 1.1rem;">🆘</span>
+                            <div
+                                style="font-size: 0.65rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--red);">
+                                Intent C — In-Crisis First Open</div>
+                        </div>
+                        <p style="font-size: 0.92rem; margin-bottom: 8px;"><strong>Active emergency.</strong> User
+                            Googles "emergency care near me Portugal" or someone shares a link while a person is
+                            injured. No prior install.</p>
+                        <p style="font-size: 0.84rem; color: var(--text-muted); margin: 0;">Design implication: Zero
+                            onboarding. PWA / web must work instantly. No login gate. Location request is the first and
+                            only friction point.</p>
+                    </div>
+
+                    <div
+                        style="background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--yellow); border-radius: 8px; padding: 18px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                            <span style="font-size: 1.1rem;">🏥</span>
+                            <div
+                                style="font-size: 0.65rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--yellow);">
+                                Intent D — Institutional / Referred</div>
+                        </div>
+                        <p style="font-size: 0.92rem; margin-bottom: 8px;"><strong>Pushed by a trusted source.</strong>
+                            SNS health app directory, travel insurance, employer, or expat relocation package recommends
+                            the app upon arrival in Portugal.</p>
+                        <p style="font-size: 0.84rem; color: var(--text-muted); margin: 0;">Design implication: Trust is
+                            already established. Onboarding focuses on setup — language, location, health context —
+                            rather than convincing the user to care.</p>
+                    </div>
+
+                </div>
+
+                <div class="signal-box" style="margin-top: 14px;">
+                    <p style="font-size: 0.9rem; margin-bottom: 6px;"><strong>Core Design Question:</strong> Can one
+                        product serve all four intents without degrading the crisis experience?</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Hypothesis: Yes — if first-open
+                        state detects context (in-crisis vs. calm) and routes accordingly. Calm → setup flow. Crisis →
+                        immediate P1 gate. No account required for either.</p>
+                </div>
+            </div>
+            <span class="slide-number">05 / 14</span>
+        </div>
+
+        <!-- SLIDE 6: Portugal Emergency System Data -->
+        <div class="slide" data-slide="6">
+            <div class="slide-inner">
+                <h3>Context</h3>
+                <h2>Portugal Emergency Care System</h2>
+                <p style="margin-bottom: 15px;">Understanding Portugal's healthcare layers and triage system:</p>
+
+                <div class="data-box">
+                    <p><strong>Call Entry Point:</strong> 112 (INEM) — 7M+ calls annually; only 20% are true emergencies
+                    </p>
+                    <p style="margin-top: 8px; font-size: 0.9rem; color: var(--text-muted);"><em>Average answer time: 8
+                            seconds</em></p>
+                </div>
+
+                <div class="data-box">
+                    <p><strong>Non-Emergency Alternative:</strong> Saúde 24 (SNS 24) for
+                        non-life-threatening triage</p>
+                </div>
+
+                <h3>Healthcare Facilities — 3 Tiers</h3>
+                <div class="grid-2">
+                    <div class="phase-card">
+                        <h4>Primary Care</h4>
+                        <p>Centro de Saúde (Health Centers) — Family doctors, routine care</p>
+                    </div>
+                    <div class="phase-card">
+                        <h4>Urgent Care</h4>
+                        <p>SUMC (Medical-Surgical) — ER at mid-size hospitals</p>
+                    </div>
+                </div>
+                <div class="phase-card">
+                    <h4>Emergency (Trauma / Critical)</h4>
+                    <p>SUP (Polyvalent) — Major hospitals with advanced intervention</p>
+                </div>
+            </div>
+            <span class="slide-number">06 / 14</span>
+        </div>
+
+        <!-- SLIDE 7: Triage Priority System -->
+        <div class="slide" data-slide="7">
+            <div class="slide-inner">
+                <h3>INEM 2026</h3>
+                <h2>Portugal's Triage System</h2>
+                <p style="margin-bottom: 20px;">New 5-level priority system with defined response times:</p>
+
+                <div class="triage-priority emergent">
+                    <span class="triage-label">P1 — Emergent (Life-Threatening)</span>
+                    <span class="triage-content">Imminent risk to life. <strong>Response: IMMEDIATE</strong> dispatch of
+                        Basic + Advanced Life Support</span>
+                    <span class="triage-content" style="margin-top: 8px; font-size: 0.8rem;"><em>Examples:
+                            Unconsciousness, choking, severe bleeding, chest pain, breathing difficulty, suspected
+                            stroke</em></span>
+                </div>
+
+                <div class="triage-priority very-urgent">
+                    <span class="triage-label">P2 — Very Urgent (High Risk)</span>
+                    <span class="triage-content"><strong>Response: Within 18 minutes</strong> — Basic Life Support +
+                        coordination with Advanced Support</span>
+                    <span class="triage-content" style="margin-top: 8px; font-size: 0.8rem;"><em>Examples: Severe
+                            allergic reaction, serious injury, signs of stroke, poisoning</em></span>
+                </div>
+
+                <div class="triage-priority urgent">
+                    <span class="triage-label">P3 — Urgent (Clinical Risk)</span>
+                    <span class="triage-content"><strong>Response: Within 60 minutes</strong> — Basic Life Support for
+                        clinical worsening risk</span>
+                    <span class="triage-content" style="margin-top: 8px; font-size: 0.8rem;"><em>Examples: Sprains,
+                            minor fractures, moderate abdominal pain, fever</em></span>
+                </div>
+
+                <div class="triage-priority less-urgent">
+                    <span class="triage-label">P4 — Less Urgent (Low Risk)</span>
+                    <span class="triage-content"><strong>Response: Within 120 minutes</strong> — Basic Life Support for
+                        stable conditions</span>
+                </div>
+
+                <div class="triage-priority non-urgent">
+                    <span class="triage-label">P5 — Non-Urgent</span>
+                    <span class="triage-content">Refer to primary care or day hospital</span>
+                </div>
+
+                <p class="source-citation">Source: The Portugal News, January 2026 — INEM Priority System Implementation
+                </p>
+            </div>
+            <span class="slide-number">07 / 14</span>
+        </div>
+
+        <!-- SLIDE 8: Response Times & Urban Context -->
+        <div class="slide" data-slide="8">
+            <div class="slide-inner">
+                <h3>Data</h3>
+                <h2>Emergency Response Times in Portugal</h2>
+                <p style="margin-bottom: 20px;">Real-world metrics by priority and location:</p>
+
+                <div class="data-box">
+                    <p><strong>P1 (Emergent) Response Activation:</strong> <span class="highlight">1 minute</span>
+                        average dispatch time (INEM 2022-2024)</p>
+                    <p style="margin-top: 6px; font-size: 0.9rem; color: var(--text-muted);">On-scene arrival varies:
+                        10-20 min urban, 30-60+ rural</p>
+                </div>
+
+                <div class="data-box">
+                    <p><strong>P2 (Very Urgent):</strong> <span class="highlight">18 minutes</span> guaranteed response
+                        target (new system)</p>
+                </div>
+
+                <div class="data-box">
+                    <p><strong>P3 (Urgent) at Hospital ER:</strong> <span class="highlight">60 minutes</span> from
+                        triage to doctor (SNS target)</p>
+                    <p style="margin-top: 6px; font-size: 0.9rem; color: var(--text-muted);"><em>Reality: 3-13 hours at
+                            major urban hospitals (Lisbon, Algarve during peak)</em></p>
+                    <p class="source-citation">Source: SNS Portal Real-Time Data, Portugal News 2025-2026</p>
+                </div>
+
+                <h3>Geographic Variation</h3>
+                <ul>
+                    <li><strong>Lisbon Metro:</strong> 8-12 min urban average; 25-45 min suburban</li>
+                    <li><strong>Porto:</strong> 10-15 min urban</li>
+                    <li><strong>Algarve (summer):</strong> 15-30 min due to tourism density</li>
+                    <li><strong>Rural/Interior:</strong> 45+ minutes typical</li>
+                </ul>
+
+                <p class="footer-note"><span class="highlight">Design Implication:</span> Users in rural areas need to
+                    know if 112 dispatch is feasible or if they should drive to nearest facility.</p>
+            </div>
+            <span class="slide-number">08 / 14</span>
+        </div>
+
+        <!-- SLIDE 9: Critical Flow - Life Threat Assessment -->
+        <div class="slide" data-slide="9">
+            <div class="slide-inner">
+                <h3>Phase 3</h3>
+                <h2>Critical Flow Design</h2>
+                <p><strong>Core Flow:</strong> Life-Threat Detection → Triage → Routing</p>
+                <p style="margin-bottom: 20px;"><span class="highlight">Key Insight:</span> First question must be "Are
+                    you/is someone in immediate life danger?" — everything branches from P1 vs. P2-P5.</p>
+
+                <div class="focus-box">
+                    <h3 style="margin-top: 0;">Flow Overview</h3>
+                    <p><strong>1. Life-Threat Gate (Red Light / Green Light):</strong></p>
+                    <ul style="margin-top: 8px;">
+                        <li>Simple yes/no: "Is the person unconscious, choking, severely bleeding, or having breathing
+                            difficulty?"</li>
+                        <li>IF YES → P1 (Emergent) → Direct to 112, show nearest SUP hospital</li>
+                        <li>IF NO → Continue to secondary triage</li>
+                    </ul>
+                </div>
+
+                <div class="focus-box">
+                    <p><strong>2. Secondary Assessment (P2-P5):</strong></p>
+                    <ul style="margin-top: 8px;">
+                        <li>Follow INEM priority logic (simplified yes/no questions)</li>
+                        <li>Route to: SNS 24 call (P4-P5), nearest SUMC/primary care (P3), or SUMC (P2)</li>
+                    </ul>
+                </div>
+
+                <div class="focus-box">
+                    <p><strong>3. Outcome (Map + Action):</strong></p>
+                    <ul style="margin-top: 8px;">
+                        <li>Show top 3 nearest facilities by priority level and distance</li>
+                        <li>Time-to-arrival estimates (walking/driving/ambulance)</li>
+                        <li>One-tap calling (112, SNS 24, facility direct line)</li>
+                    </ul>
+                </div>
+
+                <p class="footer-note"><span class="highlight">Design Principle:</span> "Minimal cognitive load under
+                    acute stress." No scrolling, no jargon, one clear action per screen.</p>
+            </div>
+            <span class="slide-number">09 / 14</span>
+        </div>
+
+        <!-- SLIDE 10: 3 User Types -->
+        <div class="slide" data-slide="10">
+            <div class="slide-inner" style="max-width: 1100px;">
+                <h3>Users</h3>
+                <h2>3 Types of Users</h2>
+                <p style="margin-bottom: 24px;">The system serves three distinct roles, each with a unique entry point
+                    and journey through the platform:</p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+
+                    <!-- Seeker -->
+                    <div
+                        style="background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--red); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 0;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <span style="font-size: 1.3rem;">🆘</span>
+                            <div>
+                                <div
+                                    style="font-size: 0.68rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--red); margin-bottom: 2px;">
+                                    Primary</div>
+                                <div style="font-size: 1.05rem; font-weight: 600; color: var(--text-primary);">Seeker
+                                </div>
+                            </div>
+                        </div>
+                        <p
+                            style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5; margin-top: 0;">
+                            Person experiencing a medical emergency or helping someone who is — often under acute
+                            stress.</p>
+                        <div
+                            style="font-size: 0.68rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 8px;">
+                            User Flow</div>
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <div
+                                style="font-size: 0.87rem; color: var(--text-secondary); padding: 5px 10px; background: var(--red-dim); border-radius: 4px; line-height: 1.4;">
+                                Recognition</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted); padding-left: 10px;">↓</div>
+                            <div
+                                style="font-size: 0.87rem; color: var(--text-secondary); padding: 5px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; line-height: 1.4;">
+                                Guided yes/no triage</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted); padding-left: 10px;">↓</div>
+                            <div
+                                style="font-size: 0.87rem; color: var(--text-secondary); padding: 5px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; line-height: 1.4;">
+                                Urgency assessment</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted); padding-left: 10px;">↓</div>
+                            <div
+                                style="font-size: 0.87rem; color: var(--text-secondary); padding: 5px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; line-height: 1.4;">
+                                Action — call 112 / urgent care / telehealth</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted); padding-left: 10px;">↓</div>
+                            <div
+                                style="font-size: 0.87rem; color: var(--text-secondary); padding: 5px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; line-height: 1.4;">
+                                Data pre-filled for handoff</div>
+                        </div>
+                    </div>
+
+                    <!-- Operator / Dispatcher -->
+                    <div
+                        style="background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--accent); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 0;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <span style="font-size: 1.3rem;">📞</span>
+                            <div>
+                                <div
+                                    style="font-size: 0.68rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 2px;">
+                                    Validated</div>
+                                <div style="font-size: 1.05rem; font-weight: 600; color: var(--text-primary);">Operator
+                                </div>
+                            </div>
+                        </div>
+                        <p
+                            style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5; margin-top: 0;">
+                            INEM dispatcher or coordination center managing incoming cases and routing resources
+                            efficiently.</p>
+                        <div
+                            style="font-size: 0.68rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 8px;">
+                            User Flow</div>
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <div
+                                style="font-size: 0.87rem; color: var(--text-secondary); padding: 5px 10px; background: var(--accent-dim); border-radius: 4px; line-height: 1.4;">
+                                Pre-validated data intake</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted); padding-left: 10px;">↓</div>
+                            <div
+                                style="font-size: 0.87rem; color: var(--text-secondary); padding: 5px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; line-height: 1.4;">
+                                Confirm urgency level</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted); padding-left: 10px;">↓</div>
+                            <div
+                                style="font-size: 0.87rem; color: var(--text-secondary); padding: 5px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; line-height: 1.4;">
+                                Match closest available resource</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted); padding-left: 10px;">↓</div>
+                            <div
+                                style="font-size: 0.87rem; color: var(--text-secondary); padding: 5px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; line-height: 1.4;">
+                                Dispatch + support call</div>
+                        </div>
+                    </div>
+
+                    <!-- Service Provider -->
+                    <div
+                        style="background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--blue); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 0;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <span style="font-size: 1.3rem;">🚑</span>
+                            <div>
+                                <div
+                                    style="font-size: 0.68rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--blue); margin-bottom: 2px;">
+                                    Enabled</div>
+                                <div style="font-size: 1.05rem; font-weight: 600; color: var(--text-primary);">Service
+                                    Provider</div>
+                            </div>
+                        </div>
+                        <p
+                            style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5; margin-top: 0;">
+                            Ambulance crew, ER team, or urgent care facility receiving and acting on dispatched cases.
+                        </p>
+                        <div
+                            style="font-size: 0.68rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 8px;">
+                            User Flow</div>
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <div
+                                style="font-size: 0.87rem; color: var(--text-secondary); padding: 5px 10px; background: var(--blue-dim); border-radius: 4px; line-height: 1.4;">
+                                Get dispatch notification</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted); padding-left: 10px;">↓</div>
+                            <div
+                                style="font-size: 0.87rem; color: var(--text-secondary); padding: 5px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; line-height: 1.4;">
+                                GPS + traffic routing</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted); padding-left: 10px;">↓</div>
+                            <div
+                                style="font-size: 0.87rem; color: var(--text-secondary); padding: 5px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; line-height: 1.4;">
+                                Pre-arrival patient info</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted); padding-left: 10px;">↓</div>
+                            <div
+                                style="font-size: 0.87rem; color: var(--text-secondary); padding: 5px 10px; background: rgba(255,255,255,0.02); border-radius: 4px; line-height: 1.4;">
+                                En-route communication</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <p class="footer-note" style="margin-top: 20px;"><span class="highlight">Design implication:</span> Each
+                    role requires a distinct entry point and information density. The Seeker needs zero cognitive load;
+                    the Operator needs speed and confidence signals; the Provider needs pre-arrival context.</p>
+            </div>
+            <span class="slide-number">10 / 14</span>
+        </div>
+
+        <div class="slide" data-slide="11">
+            <div class="slide-inner">
+                <h3>Decisions</h3>
+                <h2>Design Decisions & Trade-offs</h2>
+
+                <div class="trade-off-box">
+                    <p><strong>Decision 1: Binary Gate First ("Life Threat?") vs. Graduated Triage</strong></p>
+                    <p style="margin-top: 8px; font-size: 0.9rem;">Why: Under extreme stress, people can answer yes/no.
+                        Graduated questions create decision paralysis. P1 detection is 90% of the value.</p>
+                </div>
+
+                <div class="trade-off-box">
+                    <p><strong>Decision 2: Show Top 3 Facilities (not 10+)</strong></p>
+                    <p style="margin-top: 8px; font-size: 0.9rem;">Why: Choice paralysis is real. Distance + facility
+                        tier (SUP vs. SUMC) is enough. More = user defaults to calling 112 instead of acting.</p>
+                </div>
+
+                <div class="trade-off-box">
+                    <p><strong>Decision 3: Direct Routing, Not Self-Diagnosis Checker</strong></p>
+                    <p style="margin-top: 8px; font-size: 0.9rem;">Why: Detailed symptom checkers delay action. Users in
+                        acute distress want a clear path, not a medical interview. If unsure → P3 (60 min) or SNS 24
+                        call.</p>
+                </div>
+
+                <div class="trade-off-box">
+                    <p><strong>Decision 4: Out of Scope (v1):</strong> User accounts, medical history, insurance
+                        integration</p>
+                    <p style="margin-top: 8px; font-size: 0.9rem;">Why: Speed > personalization. If user has 30 seconds,
+                        we don't ask for login. Pre-fill comes after v1 validation.</p>
+                </div>
+
+                <p class="footer-note">Each decision prioritizes <span class="highlight">speed and clarity</span> over
+                    feature richness.</p>
+            </div>
+            <span class="slide-number">11 / 14</span>
+        </div>
+
+        <!-- SLIDE 12: Prototype in iPhone Mockup -->
+        <div class="slide iphone-slide" data-slide="12">
+            <div class="slide-inner">
+                <h3>Prototype</h3>
+                <h2>Critical Flow Mockup</h2>
+
+                <div class="iphone-layout">
+                    <!-- iPhone mockup with embedded prototype -->
+                    <div class="iphone-mockup">
+                        <div class="iphone-shell">
+                            <div class="iphone-screen-area">
+                                <div class="iphone-dynamic-island"></div>
+                                <a href="https://www.figma.com/make/qXxDkcFtanQbR0S7PJpNzw/Emergency-Response-App?t=Pnq6esXgHR7iKZU9-1"
+                                    target="_blank" rel="noopener" class="iphone-screenshot-link">
+                                    <img src="prototype-screenshot.png" class="iphone-screenshot"
+                                        alt="Emergency Assessment prototype screen" />
+                                    <div class="iphone-screenshot-overlay">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                            <polyline points="15 3 21 3 21 9" />
+                                            <line x1="10" y1="14" x2="21" y2="3" />
+                                        </svg>
+                                        <span>Open prototype</span>
+                                    </div>
+                                </a>
+                                <div class="iphone-home-indicator"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Key screens list -->
+                    <div class="iphone-info">
+                        <h3>Key Screens</h3>
+                        <ul>
+                            <li><strong>Screen 1: Life-Threat Gate</strong> — Red button emergency path vs. yellow
+                                guided triage</li>
+                            <li><strong>Screen 2: Guided Triage</strong> — 3-5 yes/no questions (Portugal INEM aligned)
+                            </li>
+                            <li><strong>Screen 3: Results Map</strong> — Top 3 facilities by distance + travel time</li>
+                            <li><strong>Screen 4: Action</strong> — One-tap call 112 / drive / SNS 24</li>
+                        </ul>
+                        <p class="footer-note" style="margin-top: 20px;">Clickable prototype — life-threat assessment →
+                            triage → routing flow.</p>
+                        <p class="footer-note">Low-fi frames included; one high-fidelity screen shown in detail.</p>
+                    </div>
+                </div>
+            </div>
+            <span class="slide-number">12 / 14</span>
+        </div>
+
+        <!-- SLIDE 13: Testing & Success Metrics -->
+        <div class="slide" data-slide="13">
+            <div class="slide-inner">
+                <h3>Phase 4</h3>
+                <h2>Testing & Measurement</h2>
+
+                <h3>Testing Strategy</h3>
+                <div class="focus-box">
+                    <p><strong>Moderated Usability Testing:</strong> 6-8 Portugal-based participants</p>
+                    <ul style="margin-top: 8px;">
+                        <li>Scenario: "You've hurt your ankle badly. Find appropriate care."</li>
+                        <li>Measure: Task completion, time-to-decision, confidence, clarity of triage questions</li>
+                        <li>Location-based testing: Urban (Lisbon) + rural (Interior) for response-time realism</li>
+                    </ul>
+                </div>
+
+                <h3>KPIs</h3>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: -8px; margin-bottom: 10px;">Targets
+                    are directional — exact values set after Phase 1 establishes current-state baselines.</p>
+                <div class="signal-box">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div>
+                            <p style="margin-bottom: 2px;"><strong>Correct Triage Rate</strong></p>
+                            <p
+                                style="font-size: 1.5rem; font-weight: 600; color: var(--accent); margin-bottom: 4px; line-height: 1;">
+                                85%+</p>
+                            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 2px;">users
+                                identify the right triage level</p>
+                        </div>
+                        <div>
+                            <p style="margin-bottom: 2px;"><strong>Time-to-Decision</strong></p>
+                            <p
+                                style="font-size: 1.5rem; font-weight: 600; color: var(--accent); margin-bottom: 4px; line-height: 1;">
+                                &lt;45 sec</p>
+                            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 2px;">app open →
+                                routing decision</p>
+                        </div>
+                        <div>
+                            <p style="margin-bottom: 2px;"><strong>Confidence Score</strong></p>
+                            <p
+                                style="font-size: 1.5rem; font-weight: 600; color: var(--accent); margin-bottom: 4px; line-height: 1;">
+                                80%+</p>
+                            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 2px;">report
+                                "high/very high" confidence</p>
+                        </div>
+                        <div>
+                            <p style="margin-bottom: 2px;"><strong>Route Clarity</strong></p>
+                            <p
+                                style="font-size: 1.5rem; font-weight: 600; color: var(--accent); margin-bottom: 4px; line-height: 1;">
+                                90%+</p>
+                            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 2px;">understand
+                                why they're routed (P1 vs. P3)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Early Warning Signals</h3>
+                <div class="signal-box">
+                    <p>⚡ <strong>Users hesitate >10 sec at any question</strong> → Language too complex or question
+                        order wrong</p>
+                    <p style="margin-top: 8px;">⚡ <strong>Users call 112 anyway (even after routing)</strong> → Trust
+                        issue with app triage vs. human dispatcher</p>
+                    <p style="margin-top: 8px;">⚡ <strong>Rural users report "no facility nearby"</strong> → Response
+                        time data incomplete or geography mismatch</p>
+                </div>
+
+                <p class="footer-note"><span class="highlight">Next Phase:</span> Post-MVP, gather telemetry on actual
+                    user paths + INEM dispatch data correlation.</p>
+            </div>
+            <span class="slide-number">13 / 14</span>
+        </div>
+
+    </div>
+
+    <!-- SLIDE 14: The End -->
+    <div class="slide" data-slide="14">
+        <div class="slide-inner">
+            <h3>Beyond — Product Design Assignment</h3>
+            <img src="https://media.giphy.com/media/3orif7BQY0WvviRs9a/giphy.gif"
+                alt="Homer Simpson driving an ambulance with Bart and Lisa"
+                style="width: 480px; max-width: 100%; border-radius: 10px; border: 1px solid var(--border); margin: 28px 0; display: block;" />
+            <h2 style="font-size: 3rem; margin-bottom: 8px;">Thank you.</h2>
+        </div>
+        <span class="slide-number">14 / 14</span>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="nav-controls">
+        <span class="slide-counter" id="slideCounter">01 / 14</span>
+        <button class="nav-btn" id="prevBtn" aria-label="Previous slide">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+        <button class="nav-btn" id="nextBtn" aria-label="Next slide">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const progressBar = document.getElementById('progressBar');
+        const slideCounter = document.getElementById('slideCounter');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let currentSlide = 0;
+
+        function updateSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+
+            const progress = ((index + 1) / totalSlides) * 100;
+            progressBar.style.width = progress + '%';
+
+            const num = String(index + 1).padStart(2, '0');
+            slideCounter.textContent = `${num} / ${String(totalSlides).padStart(2, '0')}`;
+
+            prevBtn.style.opacity = index === 0 ? '0.3' : '1';
+            nextBtn.style.opacity = index === totalSlides - 1 ? '0.3' : '1';
+        }
+
+        function goNext() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide(currentSlide);
+            }
+        }
+
+        function goPrev() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide(currentSlide);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+                e.preventDefault();
+                goNext();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                goPrev();
+            }
+        });
+
+        // Button navigation
+        prevBtn.addEventListener('click', goPrev);
+        nextBtn.addEventListener('click', goNext);
+
+        // Initialize
+        updateSlide(0);
+    </script>
+
+</body>
+
+</html>
